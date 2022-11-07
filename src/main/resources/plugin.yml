@@ -4,3 +4,4 @@ main: randomteleport.randomteleport.Randomteleport
 api-version: 1.19
 authors: [ aushot ]
 description: RandomTeleport
+website: 'https://github.com/aushot'
