@@ -1,0 +1,9 @@
+#Distance in sign without distance insert on sign
+defaultdistance: 200
+
+#Aspect of Signs
+line1: "&c[RandomTP]"
+line2: "&2%distance"
+
+#Messages
+message: "Teletrasportato con successo"
