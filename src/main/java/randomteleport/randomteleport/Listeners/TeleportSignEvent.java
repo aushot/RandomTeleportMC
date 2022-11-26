@@ -16,6 +16,17 @@ import java.util.Random;
 
 public class TeleportSignEvent implements Listener {
 
+    //check if all remaining lines are blank
+    public boolean areBlankedLines(int i, Sign sign){
+        for (int j = i; j < sign.getLines().length; j++) {
+            if (!sign.getLine(j).isEmpty()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    //calculate random location based on distance
     public Location newRandomLocation(Player player, int distance){
         World world = player.getWorld();
         Location playerlocation = player.getLocation();
@@ -27,6 +38,7 @@ public class TeleportSignEvent implements Listener {
 
         return new Location(world, playerlocation.getX()+random_X, random_Y, playerlocation.getZ()+random_Z);
     }
+
     @EventHandler
     public void onSignClick(PlayerInteractEvent event) {
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
@@ -45,6 +57,8 @@ public class TeleportSignEvent implements Listener {
                             //if distance is specified
                             if (!sign.getLine(1).isEmpty()) {
                                 try {
+                                    if(!areBlankedLines(2, sign))
+                                        return;
                                     int distance = Integer.parseInt(ChatColor.stripColor(sign.getLine(1)));
                                     newlocation = newRandomLocation(player, distance);
                                 } catch (NumberFormatException e) {
@@ -52,12 +66,8 @@ public class TeleportSignEvent implements Listener {
                                     return;
                                 }
                             } else {
-                                //check if all lines are blank
-                                for (int i = 1; i < sign.getLines().length; i++) {
-                                    if (!sign.getLine(i).isEmpty()) {
-                                        return;
-                                    }
-                                }
+                                if(!areBlankedLines(1, sign))
+                                    return;
                                 newlocation = newRandomLocation(player, configFile.getDefaultdistance());
                             }
                             player.teleport(newlocation);
