@@ -1,5 +1,6 @@
 package randomteleport.randomteleport.Listeners;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Sign;
@@ -27,39 +28,41 @@ public class TeleportSignEvent implements Listener {
         return new Location(world, playerlocation.getX()+random_X, random_Y, playerlocation.getZ()+random_Z);
     }
     @EventHandler
-    public void onSignClick(PlayerInteractEvent event){
-        if(event.getAction() == Action.RIGHT_CLICK_BLOCK){
-            if(event.getClickedBlock().getState() instanceof Sign){
-                Sign sign = (Sign) event.getClickedBlock().getState();
-                ChatUtils chatUtils = new ChatUtils();
-                ConfigFile configFile = new ConfigFile();
+    public void onSignClick(PlayerInteractEvent event) {
+        if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+            if (event.getClickedBlock() != null) {
+                if (event.getClickedBlock().getState() instanceof Sign) {
+                    Sign sign = (Sign) event.getClickedBlock().getState();
+                    ChatUtils chatUtils = new ChatUtils();
+                    ConfigFile configFile = new ConfigFile();
 
-                //if sign has the same line of config (line1)
-                if(sign.getLine(0).equalsIgnoreCase(chatUtils.utilsChat(configFile.getLine1()))) {
-                    if (event.getPlayer().hasPermission("randomteleport.user")) {
-                        Player player = event.getPlayer();
-                        Location newlocation;
+                    //if sign has the same line of config (line1)
+                    if (sign.getLine(0).equalsIgnoreCase(chatUtils.utilsChat(configFile.getLine1()))) {
+                        if (event.getPlayer().hasPermission("randomteleport.user")) {
+                            Player player = event.getPlayer();
+                            Location newlocation;
 
-                        //if distance is specified
-                        if (!sign.getLine(1).isEmpty()) {
-                            try {
-                                int distance = Integer.parseInt(sign.getLine(1));
-                                newlocation = newRandomLocation(player, distance);
-                            } catch (NumberFormatException e){
-                                player.sendMessage("Invalid format of the sign");
-                                return;
-                            }
-                        } else {
-                            //check if all lines are blank
-                            for (int i = 1; i < sign.getLines().length; i++) {
-                                if (!sign.getLine(i).isEmpty()) {
+                            //if distance is specified
+                            if (!sign.getLine(1).isEmpty()) {
+                                try {
+                                    int distance = Integer.parseInt(ChatColor.stripColor(sign.getLine(1)));
+                                    newlocation = newRandomLocation(player, distance);
+                                } catch (NumberFormatException e) {
+                                    player.sendMessage("Invalid format of the sign");
                                     return;
                                 }
+                            } else {
+                                //check if all lines are blank
+                                for (int i = 1; i < sign.getLines().length; i++) {
+                                    if (!sign.getLine(i).isEmpty()) {
+                                        return;
+                                    }
+                                }
+                                newlocation = newRandomLocation(player, configFile.getDefaultdistance());
                             }
-                            newlocation = newRandomLocation(player, configFile.getDefaultdistance());
+                            player.teleport(newlocation);
+                            player.sendMessage(chatUtils.utilsChat(configFile.getMessage()));
                         }
-                        player.teleport(newlocation);
-                        player.sendMessage(configFile.getMessage());
                     }
                 }
             }

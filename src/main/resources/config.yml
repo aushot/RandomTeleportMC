@@ -6,4 +6,4 @@ line1: "&c[RandomTP]"
 line2: "&2%distance"
 
 #Messages
-message: "Teletrasportato con successo"
+message: "&c[RandomTP] &aSei stato teletrasportato con successo"
